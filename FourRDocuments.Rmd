@@ -1,0 +1,67 @@
+---
+title: "Four R's Data"
+author: "State Demography Office"
+date: "May 31, 2016"
+output: html_document
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(codemogShiny)
+library(scales)
+
+age_place=read.csv("age_place.csv", stringsAsFactors = FALSE)
+
+single=read.csv("single.csv", stringsAsFactors = FALSE)
+```
+
+This document is meant to assist in the selection and analysis of data related to understanding the 4 R's (Risk, Response, Recovery, Resilience) of local governments.  Each Section will include data and when ready, a justification of using that data.  There will also be sections that combine the data in ways that make sense for the goal of identifying areas that are at risk.  Initially we will keep data in tables with the intention of evenutally creating a system that would provide better context and make things easier to read.
+
+
+# Working Age Population
+
+The working age population in an area is related to the workforce available in an area and generally is related to the overall economic health.  Changes in this population can be related to aging, net migration, and job availability.  We've included Ages 25 to 44 and 25 to 59 in this analysis.
+
+The following table allows you to look at the size and changes in this population from the 1990 Census to the 2010 Census. I'm happy to add change variables once we narrrow down which ones we'd like.
+
+
+```{r, echo=FALSE}
+
+tabsetPanel(
+  tabPanel("Age 25 to 59",
+    DT::renderDataTable(select(age_place, Geography, y1990=Y90A25to59, y2000=Y00A25to59, y2010=Y10A25to59,  Y90Total, Y00Total, Y10total)%>%
+                          mutate(y1990Share=round(y1990/Y90Total,2),
+                                 y2000Share=round(y2000/Y00Total,2),
+                                 y2010Share=round(y2010/Y10total,2)))
+),
+  tabPanel("Age 25 to 44",
+    DT::renderDataTable(select(age_place, Geography, y1990=Y90A25to44, y2000=Y00A25to44, y2010=Y10A25to44,  Y90Total, Y00Total, Y10total)%>%
+                          mutate(y1990Share=round(y1990/Y90Total,2),
+                                 y2000Share=round(y2000/Y00Total,2),
+                                 y2010Share=round(y2010/Y10total,2)))
+)
+
+)
+
+```
+
+
+# Single Large Employer
+
+Dependence on a single large industry or employer is another important dimension to consider.  We've seen this crop up in places like Delta where dependence on Coal and really only a couple mines has put communities at risk.  The following tables show the largest industry and the second largest industry.
+
+```{r, echo=FALSE}
+tabsetPanel(
+  tabPanel("Largest Industry",
+    DT::renderDataTable(select(single, CountyFIPS, Largest_Industry, Largest_Share))
+),
+  tabPanel("Age 25 to 44",
+    DT::renderDataTable(select(single, CountyFIPS, Second_Largest_Industry, Second_Largest_Share))
+)
+
+)
+
+
+```
