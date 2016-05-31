@@ -9,12 +9,16 @@ runtime: shiny
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(dplyr)
-library(codemogShiny)
+library(codemogAPI)
 library(scales)
 
 age_place=read.csv("age_place.csv", stringsAsFactors = FALSE)
 
-single=read.csv("single.csv", stringsAsFactors = FALSE)
+c_names=county_est(300, 2013, vars="")%>%
+  select(CountyFIPS=countyfips, county)
+
+single=read.csv("single.csv", stringsAsFactors = FALSE)%>%
+  left_join(c_names)
 ```
 
 This document is meant to assist in the selection and analysis of data related to understanding the 4 R's (Risk, Response, Recovery, Resilience) of local governments.  Each Section will include data and when ready, a justification of using that data.  There will also be sections that combine the data in ways that make sense for the goal of identifying areas that are at risk.  Initially we will keep data in tables with the intention of evenutally creating a system that would provide better context and make things easier to read.
@@ -55,10 +59,10 @@ Dependence on a single large industry or employer is another important dimension
 ```{r, echo=FALSE}
 tabsetPanel(
   tabPanel("Largest Industry",
-    DT::renderDataTable(select(single, CountyFIPS, Largest_Industry, Largest_Share))
+    DT::renderDataTable(select(single, county, Largest_Industry, Largest_Share))
 ),
   tabPanel("Age 25 to 44",
-    DT::renderDataTable(select(single, CountyFIPS, Second_Largest_Industry, Second_Largest_Share))
+    DT::renderDataTable(select(single, county, Second_Largest_Industry, Second_Largest_Share))
 )
 
 )
